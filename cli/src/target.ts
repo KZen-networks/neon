@@ -6,6 +6,7 @@ import Crate from './crate';
 import BuildSettings from './build-settings';
 
 const LIB_PREFIX: Dict<string> = {
+  'ios': "lib",
   'darwin':  "lib",
   'freebsd': "lib",
   'linux':   "lib",
@@ -14,6 +15,7 @@ const LIB_PREFIX: Dict<string> = {
 };
 
 const LIB_SUFFIX: Dict<string> = {
+  'ios': ".d",
   'darwin':  ".dylib",
   'freebsd': ".so",
   'linux':   ".so",
@@ -35,15 +37,19 @@ export default class Target {
   readonly subdirectory: string;
   readonly root: string;
   readonly dylib: string;
+  readonly platform: string;
 
   constructor(crate: Crate, options: TargetOptions = {}) {
     let { release = true, arch = process.env.npm_config_arch || process.arch } = options;
     this.crate = crate;
     this.release = release;
     this.arch = arch;
+    this.platform = process.platform;
 
-    if (process.platform === 'win32') {
+    if (this.platform === 'win32') {
       this.triple = (arch === 'ia32') ? 'i686-pc-windows-msvc' : 'x86_64-pc-windows-msvc';
+    } else if (this.platform === 'ios') {
+      this.triple = 'x86_64-apple-ios';
     } else {
       this.triple = '';
     }
@@ -51,8 +57,8 @@ export default class Target {
     this.subdirectory = path.join(this.triple, release ? 'release' : 'debug');
     this.root = path.resolve(crate.root, 'target', this.subdirectory);
 
-    let prefix = LIB_PREFIX[process.platform];
-    let suffix = LIB_SUFFIX[process.platform];
+    let prefix = LIB_PREFIX[this.platform];
+    let suffix = LIB_SUFFIX[this.platform];
     this.dylib = path.resolve(this.root, prefix + crate.name + suffix);
   }
 
@@ -73,7 +79,7 @@ export default class Target {
   async build(toolchain: rust.Toolchain | null,
               settings: BuildSettings)
   {
-    let macos = process.platform === 'darwin';
+    let macos = this.platform === 'darwin';
 
     let command = macos ? 'rustc' : 'build';
     let releaseFlags = this.release ? ["--release"] : [];
