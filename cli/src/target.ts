@@ -88,6 +88,8 @@ export default class Target {
 
     let args = [command].concat(releaseFlags, extraFlags, targetFlags);
 
+    console.log("Running cargo with", args);
+
     try {
       let result = await rust.spawn("cargo", args, toolchain, {
         cwd: this.crate.root,
