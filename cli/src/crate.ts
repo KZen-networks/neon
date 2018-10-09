@@ -14,7 +14,7 @@ export type CrateOptions = {
 export default class Crate {
   /** The Neon project containing this crate. */
   readonly project: Project;
-  /** The subpath of this crate relative to the Neon project root. */  
+  /** The subpath of this crate relative to the Neon project root. */
   readonly subdirectory: string;
   /** The subpath of the `.node` addon relative to this crate root. */
   readonly nodefile: string;
@@ -43,6 +43,7 @@ export default class Crate {
   }
 
   async finish(dylib: string) {
+    console.log(this.addon);
     await remove(this.addon);
     await copy(dylib, this.addon);
   }

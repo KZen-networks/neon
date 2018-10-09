@@ -38,7 +38,7 @@ export default class Project {
     await target.build(toolchain, settings);
 
     // 3. Copy the dylib as the main addon file.
-    log("generating " + path.join(this.crate.subdirectory, this.crate.nodefile));
+    console.log("generating " + path.join(this.crate.subdirectory, this.crate.nodefile));
     await this.crate.finish(target.dylib);
   }
 

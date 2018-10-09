@@ -15,7 +15,7 @@ const LIB_PREFIX: Dict<string> = {
 };
 
 const LIB_SUFFIX: Dict<string> = {
-  'ios': ".d",
+  'ios': ".a",
   'darwin':  ".dylib",
   'freebsd': ".so",
   'linux':   ".so",
@@ -44,8 +44,9 @@ export default class Target {
     this.crate = crate;
     this.release = release;
     this.arch = arch;
-    this.platform = process.platform;
+    this.platform = 'ios';//process.platform;
 
+    console.log(this.platform);
     if (this.platform === 'win32') {
       this.triple = (arch === 'ia32') ? 'i686-pc-windows-msvc' : 'x86_64-pc-windows-msvc';
     } else if (this.platform === 'ios') {
@@ -60,6 +61,7 @@ export default class Target {
     let prefix = LIB_PREFIX[this.platform];
     let suffix = LIB_SUFFIX[this.platform];
     this.dylib = path.resolve(this.root, prefix + crate.name + suffix);
+    console.log(this.dylib);
   }
 
   async clean() {
